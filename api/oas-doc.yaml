@@ -1,0 +1,168 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: User list
+  description: >-
+    This is an OpenAPI Specification created by oas-wizard
+    (https://github.com/pafmon/oas-wizard)  
+  contact:
+    name: PabloFM
+    email: pablofm@us.es
+    url: 'http://www.isa.us.es'
+  license:
+    name: MIT
+    url: 'http://opensource.org/licenses/MIT'
+paths:
+  /api/v1/users:
+    get:
+      description: Returns all users
+      operationId: getUsers
+      responses:
+        '200':
+          description: User List
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/user'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+    post:
+      description: Creates a new user
+      operationId: addUser
+      responses:
+        '201':
+          description: user created
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+      requestBody:
+        x-name: user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+        description: User to be created
+        required: true
+  '/api/v1/users/{name}':
+    get:
+      description: Returns a user by name
+      operationId: findUserByname
+      parameters:
+        - name: name
+          in: path
+          description: name of user to fetch
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+    delete:
+      description: deletes a single user based on the name
+      operationId: deleteUser
+      parameters:
+        - name: name
+          in: path
+          description: ID of user to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: user deleted
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+    put:
+      description: Update a user based on its name
+      operationId: updateUser
+      parameters:
+        - name: name
+          in: path
+          description: ID of user to put
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: user updated
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+      requestBody:
+        x-name: user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+        description: User to be updated
+        required: true
+components:
+  schemas:
+    errorModel:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+    user:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        description:
+          type: string
+          minLength: 1
+        avatar:
+          type: string
+          minLength: 1
+        repositories:
+          type: array
+          uniqueItems: true
+          minItems: 1
+          items:
+            required:
+              - name
+              - commits
+            properties:
+              name:
+                type: string
+                minLength: 1
+              commits:
+                type: number
+      required:
+        - name
+        - description
+        - avatar
+        - repositories
